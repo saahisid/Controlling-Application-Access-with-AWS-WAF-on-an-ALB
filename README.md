@@ -55,6 +55,10 @@ The following steps describe how to implement this practice setup:
 2. Configure security group to allow **SSH (22)** and **HTTP (80)**.
 3. In the **Advanced Section**, add the following script as **user data**:
 
+### Deploy Applications on EC2
+
+Run the following script on your EC2 instance to install Apache, create two applications (`/website1` and `/website2`), and set up HTML files:
+
 ```bash
 #!/bin/bash 
 # Update system 
@@ -104,103 +108,18 @@ EOF
 
 # Restart Apache
 sudo systemctl restart apache2
+---
+
+✅ This will install Apache, create both applications, and start the web server.
+
+### Verify Applications
+Now, open your browser and test:
+
+- `http://<Public-IP>/website1`  
+- `http://<Public-IP>/website2`
 
 
-Test applications:
 
-http://<Public-IP>/website1
 
-http://<Public-IP>/website2
 
-Target Group Setup
 
-Go to Target Groups → Create Target Group.
-
-Choose Instance as target type.
-
-Select VPC (default or custom).
-
-Register your EC2 instance as a target.
-
-Confirm target group creation.
-
-Load Balancer Setup
-
-Go to Load Balancers → Create Load Balancer.
-
-Select Application Load Balancer.
-
-Configure:
-
-ALB Name
-
-VPC and subnets
-
-Security Group (allow HTTP 80)
-
-Add Listener → Target Group.
-
-Confirm ALB creation.
-
-WAF Setup
-
-Create IP Sets:
-
-User1 → <IP1>/32
-
-User2 → <IP2>/32
-
-Create a Web ACL:
-
-Scope: Regional
-
-Resource: Attach to ALB
-
-Add Custom Rules:
-
-User1 Rule
-
-Inspect: URI Path starts with /website1/
-
-AND Condition: Source IP in User1 IP Set
-
-Action: Block
-
-Add another rule: /website2/ → Allow
-
-User2 Rule
-
-Inspect: URI Path starts with /website2/
-
-AND Condition: Source IP in User2 IP Set
-
-Action: Block
-
-Add another rule: /website1/ → Allow
-
-Set rule priority (Block before Allow).
-
-Save and activate Web ACL.
-
-✅ Testing & Validation
-User1
-
-Access /website1 → Blocked (403)
-
-Access /website2 → Allowed
-
-User2
-
-Access /website2 → Blocked (403)
-
-Access /website1 → Allowed
-
-🎯 Final Outcome
-
-Successfully hosted two applications on EC2 with Apache.
-
-Configured ALB to route traffic.
-
-Enforced fine-grained access control using AWS WAF.
-
-Verified access rules for User1 and User2.
